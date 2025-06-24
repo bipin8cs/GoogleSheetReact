@@ -1,4 +1,4 @@
-export const calculateRowsandColumnsToDisplay = (size, visibleArea,offset) => {
+export const calculateRowsandColumnsToDisplay = (size, visibleArea, offset) => {
     let visible = []// no of visible cols or rows
     const start = [];
     const end = [];
@@ -19,10 +19,21 @@ export const resizeCanvas = (canvas) => {
     //scaled height and width
     const newCanvasWidth = Math.round(width * ratio);
     const newCanvasHeight = Math.round(height * ratio);
-    const context=canvas.getContext("2d");
+    const context = canvas.getContext("2d");
     canvas.width = newCanvasWidth;
     canvas.height = newCanvasHeight;
-    context.scale(ratio,ratio);
+    context.scale(ratio, ratio);
 
 
+}
+
+export const getEncodedCharacter = (num) => {
+    let result = '';
+    while (num > 0) {
+        const rem = (num - 1) % 26;
+        result = String.fromCharCode(65 + rem) + result;
+        num = Math.floor((num - 1) / 26);
+
+    }
+    return result;
 }

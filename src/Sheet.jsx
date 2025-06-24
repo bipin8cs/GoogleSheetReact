@@ -1,14 +1,19 @@
 
-import { useEffect, useRef } from "react"
-import { calculateRowsandColumnsToDisplay, resizeCanvas } from './Sheet.utils'
+import { useEffect, useRef, useState } from "react"
+import { calculateRowsandColumnsToDisplay, resizeCanvas, getEncodedCharacter } from './Sheet.utils'
 export const Sheet = () => {
     const canvasRef = useRef(null);
-    const canavaWidth = window.innerWidth;
-    const canvasHeight = window.innerHeight;
+    const [canavaWidth, setCanavaWidth] = useState(window.innerWidth);
+    const [canvasHeight, setCanvasHeight] = useState(window.innerHeight);
     const cellWidth = 100;
     const cellHight = 22;
-    const { visible: visibleColumns, start: columnStart, end: coulumnEnd } = calculateRowsandColumnsToDisplay(cellWidth, canavaWidth);
-    const { visible: visibleRows, start: rowStart, end: rowEnd } = calculateRowsandColumnsToDisplay(cellHight, canvasHeight);
+    const rowHeaderWidth = 50;
+    const cloumnHeaderHeight = 22;
+    const headerColor = '#f8f9fa';
+    const gridLineColor = '#e2e3e3';
+    const headerTextColor = "#666666"
+    const { visible: visibleColumns, start: columnStart, end: coulumnEnd } = calculateRowsandColumnsToDisplay(cellWidth, canavaWidth, rowHeaderWidth);
+    const { visible: visibleRows, start: rowStart, end: rowEnd } = calculateRowsandColumnsToDisplay(cellHight, canvasHeight, cloumnHeaderHeight);
     console.log('visibleColumns', visibleColumns, columnStart, coulumnEnd, "Visible rows", rowStart, rowEnd);
 
     useEffect(() => {
@@ -19,26 +24,85 @@ export const Sheet = () => {
         context.fillStyle = 'white';
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
         //drowth lines for rows
-        //drowth lines for rows
-        let startY = 0
+
+        let startY = cloumnHeaderHeight;
+        context.strokeStyle = gridLineColor;
         for (const row of visibleRows) {
             context.beginPath();
-            context.moveTo(0, startY);//where to start
+            context.moveTo(rowHeaderWidth, startY);//where to start
             context.lineTo(context.canvas.width, startY);// where to end
             context.stroke();// fill the color
-            startY+=cellHight;
+            startY += cellHight;
         }
         //Drawing the line or column
-        let startX = 0
+        let startX = rowHeaderWidth;
         for (const col of visibleColumns) {
             context.beginPath();
-            context.moveTo(startX, 0);//where to start
+            context.moveTo(startX, cloumnHeaderHeight);//where to start
             context.lineTo(startX, context.canvas.height);// where to end
             context.stroke();// fill the color
             startX += cellWidth;
         }
 
+        //Draw row header
+        startY = cloumnHeaderHeight;
+        context.fillStyle = headerColor;
+        context.fillRect(0, 0, rowHeaderWidth, context.canvas.height)
+        for (const row of visibleRows) {
+            context.beginPath();
+            context.moveTo(0, startY);//where to start
+            context.lineTo(rowHeaderWidth, startY);// where to end
+            context.stroke();// fill the color
+            startY += cellHight;
+        }
+        //draw column header
+        startX = rowHeaderWidth;
+        startY = cloumnHeaderHeight;
+        context.fillStyle = headerColor;
+        context.fillRect(0, 0, context.canvas.width, cloumnHeaderHeight);
+        for (const col of visibleColumns) {
+            context.beginPath();
+            context.moveTo(startX, 0);//where to start
+            context.lineTo(startX, cloumnHeaderHeight);// where to end
+            context.stroke();// fill the color
+            startX += cellWidth;
+        }
+        //write col header text
+        startX = rowHeaderWidth;
+        //keeping in the center in canvas for that write the text below
+        context.textAlign = 'center'//horizontally
+        context.textBaseline = 'middle';
 
+
+        context.font = '13 px sans-serif';
+        context.fillStyle = headerTextColor;
+        for (const col of visibleColumns) {
+            const centerX = startX + (cellWidth * 0.5);
+            const centerY = cloumnHeaderHeight * 0.5;
+            const content = getEncodedCharacter(col + 1);
+            context.fillText(content, centerX, centerY);
+            startX += cellWidth;
+        }
+        //write row header number
+        startY = cloumnHeaderHeight;
+        for (const row of visibleRows) {
+            const centerY = startY + (cellHight * 0.5);
+            const centerX = rowHeaderWidth * 0.5;
+            const content = row + 1;
+            context.fillText(content, centerX, centerY);
+            startY += cellHight;
+        }
+    }, [])
+
+    useEffect(() => {
+        const resizeCanvas = () => {
+            setCanavaWidth(window.innerWidth);
+            setCanvasHeight(window, innerHeight);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        return () => {
+            window.removeEventListener('resize', resizeCanvas)
+        }
     }, [])
 
     return <div style={{ height: '100vh', width: '100vw' }}>
