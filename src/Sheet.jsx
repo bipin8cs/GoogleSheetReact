@@ -107,5 +107,14 @@ export const Sheet = () => {
 
     return <div style={{ height: '100vh', width: '100vw' }}>
         <canvas ref={canvasRef} style={{ height: '100vh', width: '100vw' }} />
+        <div>
+            {/* for horizontal scrolling */}
+            <div style={{
+                position :'absolute'
+            }}>
+                {/* for vertical scalling */}
+            </div>
+
+        </div>
     </div>
 }
