@@ -104,13 +104,40 @@ export const Sheet = () => {
             window.removeEventListener('resize', resizeCanvas)
         }
     }, [])
+    const onScroll = (e) => {
+       const scrollX=e.target.scrollLeft;
+       const scrollY=e.target.scrollTop;
+       const cellOffsetInXdirection=Math.floor(scrollX/cellWidth);
+        const cellOffsetInYdirection=Math.floor(scrollY/cellHight);
+    }
 
-    return <div style={{ height: '100vh', width: '100vw' }}>
+    return <div style={{ height: '100vh', width: '100vw', position: 'relative' }}>
         <canvas ref={canvasRef} style={{ height: '100vh', width: '100vw' }} />
-        <div>
-            {/* for horizontal scrolling */}
+
+        {/* this below div is a overley element which will be show above the canvas element */}
+        <div
+            onScroll={onScroll}
+            style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                top: 0,
+                left: 0,
+                overflow: 'scroll'
+            }} >
+
+            {/* for horizontal scrolling content to verflow horizontal */}
             <div style={{
-                position :'absolute'
+                width: '5000px',
+                height: '1px',
+                position: 'absolute'
+            }}>
+                {/* for vertical scalling  content to verflow vertically*/}
+            </div>
+            <div style={{
+                width: '1px',
+                height: '5000px',
+                position: 'absolute'
             }}>
                 {/* for vertical scalling */}
             </div>

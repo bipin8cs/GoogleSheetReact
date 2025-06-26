@@ -1,8 +1,11 @@
-export const calculateRowsandColumnsToDisplay = (size, visibleArea, offset) => {
+export const calculateRowsandColumnsToDisplay = (size, visibleArea, offset,cellOffset) => {
+
+
     let visible = []// no of visible cols or rows
     const start = [];
     const end = [];
-    let idx = 0;
+    let idx = 0 || cellOffset;
+    
     let nextStart = offset;
     while (nextStart < visibleArea) {
         visible.push(idx);
