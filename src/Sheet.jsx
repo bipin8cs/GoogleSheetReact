@@ -5,6 +5,13 @@ export const Sheet = () => {
     const canvasRef = useRef(null);
     const [canavaWidth, setCanavaWidth] = useState(window.innerWidth);
     const [canvasHeight, setCanvasHeight] = useState(window.innerHeight);
+    //when you are scrollong from there we need show the screen
+    const [cellOffset, setCellOffset] = useState({
+        x: 0, y: 0
+    });
+//for in infinity scrolling we need to increase or decrease the width dynamically 
+
+
     const cellWidth = 100;
     const cellHight = 22;
     const rowHeaderWidth = 50;
@@ -12,8 +19,8 @@ export const Sheet = () => {
     const headerColor = '#f8f9fa';
     const gridLineColor = '#e2e3e3';
     const headerTextColor = "#666666"
-    const { visible: visibleColumns, start: columnStart, end: coulumnEnd } = calculateRowsandColumnsToDisplay(cellWidth, canavaWidth, rowHeaderWidth);
-    const { visible: visibleRows, start: rowStart, end: rowEnd } = calculateRowsandColumnsToDisplay(cellHight, canvasHeight, cloumnHeaderHeight);
+    const { visible: visibleColumns, start: columnStart, end: coulumnEnd } = calculateRowsandColumnsToDisplay(cellWidth, canavaWidth, rowHeaderWidth,cellOffset.x);
+    const { visible: visibleRows, start: rowStart, end: rowEnd } = calculateRowsandColumnsToDisplay(cellHight, canvasHeight, cloumnHeaderHeight,cellOffset.y);
     console.log('visibleColumns', visibleColumns, columnStart, coulumnEnd, "Visible rows", rowStart, rowEnd);
 
     useEffect(() => {
@@ -92,7 +99,7 @@ export const Sheet = () => {
             context.fillText(content, centerX, centerY);
             startY += cellHight;
         }
-    }, [])
+    }, [canavaWidth,canvasHeight,cellOffset.x,cellOffset.y])
 
     useEffect(() => {
         const resizeCanvas = () => {
@@ -105,10 +112,11 @@ export const Sheet = () => {
         }
     }, [])
     const onScroll = (e) => {
-       const scrollX=e.target.scrollLeft;
-       const scrollY=e.target.scrollTop;
-       const cellOffsetInXdirection=Math.floor(scrollX/cellWidth);
-        const cellOffsetInYdirection=Math.floor(scrollY/cellHight);
+        const scrollX = e.target.scrollLeft;
+        const scrollY = e.target.scrollTop;
+        const cellOffsetInXdirection = Math.floor(scrollX / cellWidth);
+        const cellOffsetInYdirection = Math.floor(scrollY / cellHight);
+        setCellOffset({ x: cellOffsetInXdirection, y: cellOffsetInYdirection });
     }
 
     return <div style={{ height: '100vh', width: '100vw', position: 'relative' }}>
@@ -135,8 +143,9 @@ export const Sheet = () => {
                 {/* for vertical scalling  content to verflow vertically*/}
             </div>
             <div style={{
-                width: '1px',
+               
                 height: '5000px',
+                 width: '1px',
                 position: 'absolute'
             }}>
                 {/* for vertical scalling */}
